@@ -8,11 +8,8 @@ use std::io;
 use app::App;
 use color_eyre::Result;
 use crossterm::{
-    event::{self, Event, KeyCode},
-    execute,
-    terminal::{
-        disable_raw_mode, enable_raw_mode,
-        EnterAlternateScreen, LeaveAlternateScreen,
+    event::{self, Event, KeyCode, KeyEventKind}, execute, terminal::{
+        EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
     },
 };
 use ratatui::{
@@ -25,6 +22,7 @@ use ui::{
     footer::render_footer,
     menu::render_menu,
     layout::calculate_layout,
+    input::render_input,
 };
 
 fn draw(frame: &mut ratatui::Frame, app: &App) {
@@ -32,6 +30,7 @@ fn draw(frame: &mut ratatui::Frame, app: &App) {
 
     draw_banner(frame, layout.banner);
     render_menu(frame, layout.content, app);
+    render_input(frame, layout.input, &app.input);
     render_footer(frame, layout.footer);
 }
 
@@ -52,7 +51,7 @@ fn main() -> Result<()> {
     
     let mut terminal = Terminal::new(backend)?;
 
-    let app = App::new();
+    let mut app = App::new();
 
     loop {
         // Boilerplate: render UI every loop iteration
@@ -63,9 +62,26 @@ fn main() -> Result<()> {
         // Boilerplate: handle keyboard input events
         if event::poll(std::time::Duration::from_millis(100))? {
             if let Event::Key(key) = event::read()? {
-                // quit application by pressing 'q'
-                if key.code == KeyCode::Char('q') {
-                    break;
+                // crossterm known issue, skip release events
+                if key.kind != KeyEventKind::Press {
+                    continue;  
+                }
+                match key.code {
+                    KeyCode::Char('q') => break,
+                    KeyCode::Char(c) => {
+                        app.input.push(c);
+                        app.show_commands = app.input.starts_with('/');
+                    }
+                    KeyCode::Backspace => {
+                        app.input.pop();
+                        app.show_commands = app.input.starts_with('/');
+                    }
+                    KeyCode::Enter => {
+                        // todo : handle commands
+                        app.input.clear();
+                        app.show_commands = false;
+                    }
+                    _ => {}
                 }
             }
         }

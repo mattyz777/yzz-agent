@@ -1,13 +1,15 @@
 pub struct App {
-    pub selected: usize,
-    pub running: bool,
+    pub input: String,
+    pub show_commands: bool,
+    pub last_message: String,
 }
 
 impl App {
     pub fn new() -> Self {
         Self {
-            selected: 0,
-            running: true,
+            input: String::new(),
+            show_commands: false,
+            last_message: String::new(),
         }
     }
 }
