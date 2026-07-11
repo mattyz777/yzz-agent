@@ -6,7 +6,7 @@ use ratatui::{
 
 pub fn draw_banner(frame: &mut Frame, area: Rect) {
     let banner = r#"Welcome to YZZ agent"#;
-1
+
     let paragraph = Paragraph::new(format!(
         "{}\n\n{}",
         banner,
