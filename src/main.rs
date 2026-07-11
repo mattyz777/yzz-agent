@@ -1,5 +1,8 @@
+mod action;
 mod app;
 mod command;
+mod event;
+mod handler;
 mod ui;
 mod utils;
 
@@ -9,7 +12,7 @@ use app::App;
 use color_eyre::Result;
 use crossterm::{
     cursor::SetCursorStyle,
-    event::{self, Event, KeyCode, KeyEventKind}, execute, terminal::{
+    execute, terminal::{
         EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
     },
 };
@@ -55,49 +58,11 @@ fn main() -> Result<()> {
     let mut app = App::new();
 
     loop {
-        // Boilerplate: render UI every loop iteration
-        terminal.draw(|frame| {
-            draw(frame, &app);
-        })?;
-        
-        // Boilerplate: handle keyboard input events
-        if event::poll(std::time::Duration::from_millis(100))? {
-            if let Event::Key(key) = event::read()? {
-                // crossterm known issue, skip release events
-                if key.kind != KeyEventKind::Press {
-                    continue;  
-                }
-                match key.code {
-                    KeyCode::Char('q') => break,
-                    KeyCode::Char(c) => {
-                        app.input.insert(app.cursor_position, c);
-                        app.cursor_position += 1;
-                        app.show_commands = app.input.starts_with('/');
-                    }
-                    KeyCode::Backspace => {
-                        if app.cursor_position > 0 {
-                            app.input.remove(app.cursor_position - 1);
-                            app.cursor_position -= 1;
-                        }
-                        app.show_commands = app.input.starts_with('/');
-                    }
-                    KeyCode::Left => {
-                        if app.cursor_position > 0 {
-                            app.cursor_position -= 1;
-                        }
-                    }
-                    KeyCode::Right => {
-                        if app.cursor_position < app.input.len() {
-                            app.cursor_position += 1;
-                        }
-                    }
-                    KeyCode::Enter => {
-                        // todo : handle commands
-                        app.input.clear();
-                        app.show_commands = false;
-                    }
-                    _ => {}
-                }
+        terminal.draw(|frame| draw(frame, &app))?;
+
+        if let Some(action) = event::handle_event() {
+            if !handler::handle_action(&mut app, action) {
+                break;
             }
         }
     }
