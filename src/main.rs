@@ -8,6 +8,7 @@ use std::io;
 use app::App;
 use color_eyre::Result;
 use crossterm::{
+    cursor::SetCursorStyle,
     event::{self, Event, KeyCode, KeyEventKind}, execute, terminal::{
         EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
     },
@@ -30,7 +31,7 @@ fn draw(frame: &mut ratatui::Frame, app: &App) {
 
     draw_banner(frame, layout.banner);
     render_menu(frame, layout.content, app);
-    render_input(frame, layout.input, &app.input);
+    render_input(frame, layout.input, &app.input, app.cursor_position);
     render_footer(frame, layout.footer);
 }
 
@@ -44,7 +45,7 @@ fn main() -> Result<()> {
     let mut stdout = io::stdout();
     
     // Boilerplate: restore original terminal content when the app exits
-    execute!(stdout, EnterAlternateScreen)?;
+    execute!(stdout, SetCursorStyle::SteadyBlock, EnterAlternateScreen)?;
 
     // Boilerplate: init
     let backend = CrosstermBackend::new(stdout);
@@ -69,12 +70,26 @@ fn main() -> Result<()> {
                 match key.code {
                     KeyCode::Char('q') => break,
                     KeyCode::Char(c) => {
-                        app.input.push(c);
+                        app.input.insert(app.cursor_position, c);
+                        app.cursor_position += 1;
                         app.show_commands = app.input.starts_with('/');
                     }
                     KeyCode::Backspace => {
-                        app.input.pop();
+                        if app.cursor_position > 0 {
+                            app.input.remove(app.cursor_position - 1);
+                            app.cursor_position -= 1;
+                        }
                         app.show_commands = app.input.starts_with('/');
+                    }
+                    KeyCode::Left => {
+                        if app.cursor_position > 0 {
+                            app.cursor_position -= 1;
+                        }
+                    }
+                    KeyCode::Right => {
+                        if app.cursor_position < app.input.len() {
+                            app.cursor_position += 1;
+                        }
                     }
                     KeyCode::Enter => {
                         // todo : handle commands
@@ -92,6 +107,6 @@ fn main() -> Result<()> {
     
     // Boilerplate: leave alternate screen and return to normal terminal
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-
+    
     Ok(())
 }
