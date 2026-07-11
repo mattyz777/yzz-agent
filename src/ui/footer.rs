@@ -5,6 +5,6 @@ use ratatui::{
 };
 
 pub fn render_footer(frame: &mut Frame, area: Rect) {
-    let footer = Paragraph::new("↑↓ Move    Enter Select    q Quit");
+    let footer = Paragraph::new("");
     frame.render_widget(footer, area);
 }

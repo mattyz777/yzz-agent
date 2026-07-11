@@ -1,4 +1,4 @@
-use crossterm::event::{self, Event, KeyCode, KeyEventKind};
+use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 
 use crate::action::Action;
 
@@ -17,7 +17,13 @@ pub fn handle_event() -> Option<Action> {
                 KeyCode::Backspace => Action::Backspace,
                 KeyCode::Left => Action::MoveLeft,
                 KeyCode::Right => Action::MoveRight,
-                KeyCode::Enter => Action::Enter,
+                KeyCode::Enter => {
+                    if key.modifiers.contains(KeyModifiers::SHIFT) {
+                        Action::NewLine
+                    } else {
+                        Action::Enter
+                    }
+                }
                 _ => return None,
             };
 

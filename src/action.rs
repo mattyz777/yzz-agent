@@ -4,5 +4,6 @@ pub enum Action {
     Backspace,
     MoveLeft,
     MoveRight,
+    NewLine,
     Enter,
 }

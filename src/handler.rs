@@ -26,6 +26,10 @@ pub fn handle_action(app: &mut App, action: Action) -> bool {
                 app.cursor_position += 1;
             }
         }
+        Action::NewLine => {
+            app.input.insert(app.cursor_position, '\n');
+            app.cursor_position += 1;
+        }
         Action::Enter => {
             // TODO: handle commands
             app.input.clear();
