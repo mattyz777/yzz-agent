@@ -1,11 +1,17 @@
 use ratatui::{
-    layout::Rect,
+    layout::{Alignment, Rect},
     style::{Color, Style},
     widgets::Paragraph,
     Frame,
 };
 
-pub fn render_input(frame: &mut Frame, area: Rect, input: &str, cursor_position: usize) {
+pub fn render_input(
+    frame: &mut Frame,
+    input_area: Rect,
+    hint_area: Rect,
+    input: &str,
+    cursor_position: usize,
+) {
     let (text, text_color) = if input.is_empty() {
         ("ask a question or describe a task", Color::DarkGray)
     } else {
@@ -16,12 +22,19 @@ pub fn render_input(frame: &mut Frame, area: Rect, input: &str, cursor_position:
         .style(Style::default().fg(text_color))
         .wrap(ratatui::widgets::Wrap { trim: false });
 
-    frame.render_widget(input_widget, area);
+    frame.render_widget(input_widget, input_area);
 
-    let (cursor_x, cursor_y) = calculate_cursor_position(input, cursor_position, area);
+    if input.is_empty() {
+        let hint = Paragraph::new("/copy to clipboard")
+            .style(Style::default().fg(Color::DarkGray))
+            .alignment(Alignment::Right);
+        frame.render_widget(hint, hint_area);
+    }
 
+    let (cursor_x, cursor_y) = calculate_cursor_position(input, cursor_position, input_area);
     frame.set_cursor_position((cursor_x, cursor_y));
 }
+
 
 fn calculate_cursor_position(input: &str, cursor_position: usize, area: Rect) -> (u16, u16) {
     if input.is_empty() {

@@ -22,10 +22,9 @@ use ratatui::{
 };
 
 use ui::{
-    banner::draw_banner,
+    banner::render_banner,
     footer::render_footer,
     input::render_input,
-    input_hint::render_input_hint,
     menu::render_menu,
 };
 
@@ -35,10 +34,9 @@ use crate::ui::layout::calculate_layout;
 fn draw(frame: &mut ratatui::Frame, app: &App) {
     let layout = calculate_layout(frame, &app.input);
 
-    draw_banner(frame, layout.banner);
+    render_banner(frame, layout.banner);
     render_menu(frame, layout.content, app);
-    render_input(frame, layout.input, &app.input, app.cursor_position);
-    render_input_hint(frame, layout.input_hint, &app.input);
+    render_input(frame, layout.input, layout.input_hint, &app.input, app.cursor_position);
     render_footer(frame, layout.footer);
 }
 
@@ -56,9 +54,11 @@ fn main() -> Result<()> {
 
     // Boilerplate: init
     let backend = CrosstermBackend::new(stdout);
-    
+
+    // Boilerplate: init
     let mut terminal = Terminal::new(backend)?;
 
+    // Boilerplate: init
     let mut app = App::new();
 
     loop {

@@ -4,7 +4,7 @@ use ratatui::{
     widgets::{Block, Paragraph}
 };
 
-pub fn draw_banner(frame: &mut Frame, area: Rect) {
+pub fn render_banner(frame: &mut Frame, area: Rect) {
     let banner = r#"Welcome to YZZ agent"#;
 
     let paragraph = Paragraph::new(format!(

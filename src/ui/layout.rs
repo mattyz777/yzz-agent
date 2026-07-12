@@ -22,7 +22,7 @@ pub fn calculate_layout(frame: &Frame, input: &str) -> LayoutAreas {
         Constraint::Min(0),                 // content, flexible
         Constraint::Length(input_height),   // input (dynamic height)
         Constraint::Length(1),              // input hint
-        Constraint::Length(1),              // footer (temp no footer)
+        Constraint::Length(1),              // footer
     ])
     .split(area);
 
