@@ -45,7 +45,7 @@ fn draw(frame: &mut ratatui::Frame, app: &App) {
         layout.command_list,
         &app.input,
         app.command_scroll_offset,
-        app.selected_command_index,
+        app.command_selected_index,
     );
     render_footer(frame, layout.footer);
 }

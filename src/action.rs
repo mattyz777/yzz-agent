@@ -8,4 +8,5 @@ pub enum Action {
     MoveUp,
     NewLine,
     Enter,
+    Escape,
 }
