@@ -28,7 +28,10 @@ use ui::{
     menu::render_menu,
 };
 
-use crate::ui::layout::calculate_layout;
+use crate::ui::{
+    command_list::render_command_list, 
+    layout::calculate_layout
+};
 
 
 fn draw(frame: &mut ratatui::Frame, app: &App) {
@@ -37,6 +40,13 @@ fn draw(frame: &mut ratatui::Frame, app: &App) {
     render_banner(frame, layout.banner);
     render_menu(frame, layout.content, app);
     render_input(frame, layout.input, layout.input_hint, &app.input, app.cursor_position);
+    render_command_list(
+        frame,
+        layout.command_list,
+        &app.input,
+        app.command_scroll_offset,
+        app.selected_command_index,
+    );
     render_footer(frame, layout.footer);
 }
 

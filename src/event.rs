@@ -17,6 +17,8 @@ pub fn handle_event() -> Option<Action> {
                 KeyCode::Backspace => Action::Backspace,
                 KeyCode::Left => Action::MoveLeft,
                 KeyCode::Right => Action::MoveRight,
+                KeyCode::Up => Action::MoveUp,
+                KeyCode::Down => Action::MoveDown,
                 KeyCode::Enter => {
                     if key.modifiers.contains(KeyModifiers::SHIFT) {
                         Action::NewLine

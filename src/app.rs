@@ -1,17 +1,19 @@
 pub struct App {
-    pub cursor_position: usize,
     pub input: String,
-    pub last_message: String,
-    pub show_commands: bool,
+    pub cursor_position: usize,
+    pub command_list_visible: bool,
+    pub selected_command_index: usize,
+    pub command_scroll_offset: usize,
 }
 
 impl App {
     pub fn new() -> Self {
         Self {
-            cursor_position: 0,
             input: String::new(),
-            last_message: String::new(),
-            show_commands: false,
+            cursor_position: 0,
+            command_list_visible: false,
+            selected_command_index: 0,
+            command_scroll_offset: 0,
         }
     }
 }
